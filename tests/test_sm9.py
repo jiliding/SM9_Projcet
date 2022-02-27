@@ -31,7 +31,7 @@ if __name__ == '__main__':
     
     master_public, master_secret = sm9.setup ('keyagreement')
 
-    Da = sm9.private_key_extract ('keyagreement', master_ public, master_secret, idA)
+    Da = sm9.private_key_extract ('keyagreement', master_public, master_secret, idA)
     Db = sm9.private_key_extract ('keyagreement', master_public, master_secret, idB)
 
     xa, Ra = sm9.generate_ephemeral (master_public, idB)
@@ -53,7 +53,13 @@ if __name__ == '__main__':
     message = 'abc'
     ct = sm9.kem_dem_enc (master_public, idA, message, 32)
     pt = sm9.kem_dem_dec (master_public, idA, Da, ct, 32)
+    print(Da)
 
+    print(master_public)
+    print(master_secret)
+    print(ct)
+    print(pt)
+    print(type(Da), type(master_public), type(master_secret), type(ct), type(pt))
     assert (message == pt)
 
     print ("\t\t\t success")
