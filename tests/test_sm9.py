@@ -1,6 +1,7 @@
 
 
 from gmssl import sm9
+import json
 
 if __name__ == '__main__':
     idA = 'a'
@@ -60,6 +61,9 @@ if __name__ == '__main__':
     print(ct)
     print(pt)
     print(type(Da), type(master_public), type(master_secret), type(ct), type(pt))
+
+    j1 = json.dump(Da)
+    print(j1)
     assert (message == pt)
 
     print ("\t\t\t success")
