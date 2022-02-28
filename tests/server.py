@@ -12,7 +12,7 @@ import os
 import struct
 import pickle
 from gmssl import sm9
-
+import json
 idA = 'a'
 def socket_service():
     try:
@@ -50,12 +50,31 @@ def deal_data(conn, addr):
         Da = sm9.private_key_extract('encrypt', master_public, master_secret, idA)
         message = 'abc'
         ct = sm9.kem_dem_enc(master_public, idA, message, 32)
-        conn.send(master_public)
-        conn.send(idA)
-        conn.send(Da)
-        conn.send(ct)
+        p_master_public = pickle.dumps(master_public)
+        p_idA = pickle.dumps(idA)
+        p_Da = pickle.dumps(Da)
+        p_ct = pickle.dumps(ct)
+        p_dict = {'idA': p_idA, 'Da': p_Da, 'ct': p_ct}
+        pp_dict = pickle.dumps(p_dict)
+        print(pp_dict)
+        print(len(pp_dict))
+        # print(len(p_master_public))
+        # print(len(p_idA))
+        # print(len(p_Da))
+        # print(len(p_ct))
+        # print(p_master_public)
+        # print(p_idA)
+        # print(p_Da)
+        # print(p_ct)
+        conn.send(p_master_public)
+        conn.send(pp_dict)
+        # conn.send(p_idA)
+        # conn.send(p_Da)
+        # conn.send(p_ct)
 
         conn.send('已发送'.encode("utf-8"))
+        print('已发送')
+        # print('已发送'.encode("utf-8"))
         print('通信时间：', time.ctime())
         print(conn.recv(1024).decode('utf-8'))
         conn.close()

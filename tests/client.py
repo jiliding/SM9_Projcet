@@ -13,7 +13,7 @@ import random
 import string
 from time import ctime, time
 from gmssl import sm9
-
+import json
 
 
 def socket_client():
@@ -46,12 +46,37 @@ def socket_client():
     # pt = sm9.kem_dem_dec(master_public, idA, Da, ct, 32)
 
     while True:
-        master_public = s.recv(1024)
-        idA = s.recv(1024)
-        Da = s.recv(1024)
-        ct = s.recv(1024)
+        p_master_public = s.recv(2048)
+        print(p_master_public)
+        print(len(p_master_public))
+
+        pp_dict = s.recv(1024)
+        print(pp_dict)
+        print(len(pp_dict))
+        p_dict = pickle.loads(pp_dict)
+        p_idA = p_dict['idA']
+        p_Da = p_dict['Da']
+        p_ct = p_dict['ct']
+        # p_idADact = s.recv(1024)
+        # p_idA = p_idADact[0, 15]
+        # p_Da = p_idADact[16, 203]
+        # p_ct = p_idADact[]
+        # p_idA = s.recv(1024)
+        # print(p_idA)
+        # print(len(p_idA))
+        # p_Da = s.recv(1024)
+        # print(p_Da)
+        # print(len(p_Da))
+        # p_ct = s.recv(1024)
+        # print(len(p_ct))
+        # print(p_ct)
+        master_public = pickle.loads(p_master_public)
+        idA = pickle.loads(p_idA)
+        Da = pickle.loads(p_Da)
+        ct = pickle.loads(p_ct)
 
         pt = sm9.kem_dem_dec(master_public, idA, Da, ct, 32)
+        print('接收到的数据为'+pt)
         print(s.recv(1024).decode("utf-8"))
         s.send('结束本次通信'.encode())
         s.close()
