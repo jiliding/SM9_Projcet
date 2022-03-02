@@ -54,6 +54,7 @@ def deal_data(conn, addr):
         p_idA = pickle.dumps(idA)
         p_Da = pickle.dumps(Da)
         p_ct = pickle.dumps(ct)
+        start_time = time.time()
         p_dict = {'idA': p_idA, 'Da': p_Da, 'ct': p_ct}
         pp_dict = pickle.dumps(p_dict)
         print(pp_dict)
@@ -71,6 +72,13 @@ def deal_data(conn, addr):
         # conn.send(p_idA)
         # conn.send(p_Da)
         # conn.send(p_ct)
+        print(conn.recv(1024).decode('utf-8'))
+        end_time = time.time()
+        if (end_time - start_time > 5):
+            print('连接出错，中断连接，终端类型：与客户端连接超时')
+            conn.close()
+            break
+
 
         conn.send('已发送'.encode("utf-8"))
         print('已发送')

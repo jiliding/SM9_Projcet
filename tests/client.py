@@ -19,9 +19,10 @@ import json
 def socket_client():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        IP = input('请输入对方主机IP地址：')
-        Port = int(input('请输入端口号：'))
-
+        # IP = input('请输入对方主机IP地址：')
+        # Port = int(input('请输入端口号：'))
+        IP = '127.0.0.1'
+        Port = int(6666)
         s.connect((IP, Port))
     except socket.error as msg:
         print(msg)
@@ -76,6 +77,8 @@ def socket_client():
         ct = pickle.loads(p_ct)
 
         pt = sm9.kem_dem_dec(master_public, idA, Da, ct, 32)
+
+        s.send('完成数据接受并解密成功'.encode())
         print('接收到的数据为'+pt)
         print(s.recv(1024).decode("utf-8"))
         s.send('结束本次通信'.encode())
