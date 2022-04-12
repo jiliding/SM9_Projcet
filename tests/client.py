@@ -54,23 +54,10 @@ def socket_client():
         pp_dict = s.recv(1024)
         print(pp_dict)
         print(len(pp_dict))
-        p_dict = pickle.loads(pp_dict)
+        p_dict = pickle.loads(pp_dict) #得到字典数据
         p_idA = p_dict['idA']
         p_Da = p_dict['Da']
         p_ct = p_dict['ct']
-        # p_idADact = s.recv(1024)
-        # p_idA = p_idADact[0, 15]
-        # p_Da = p_idADact[16, 203]
-        # p_ct = p_idADact[]
-        # p_idA = s.recv(1024)
-        # print(p_idA)
-        # print(len(p_idA))
-        # p_Da = s.recv(1024)
-        # print(p_Da)
-        # print(len(p_Da))
-        # p_ct = s.recv(1024)
-        # print(len(p_ct))
-        # print(p_ct)
         master_public = pickle.loads(p_master_public)
         idA = pickle.loads(p_idA)
         Da = pickle.loads(p_Da)
@@ -80,6 +67,25 @@ def socket_client():
 
         s.send('完成数据接受并解密成功'.encode())
         print('接收到的数据为'+pt)
+
+
+        ##签名验签
+        s_master_public, s_master_secret = sm9.setup ('sign')
+        s_Da = sm9.private_key_extract ('sign', s_master_public, s_master_secret, idA)
+        signature = sm9.sign (s_master_public, s_Da, pt)
+
+        p_s_master_public = pickle.dumps(s_master_public)
+        p_s_message = pickle.dumps(pt)
+        p_s_idA = pickle.dumps(idA)
+        p_signature = pickle.dumps(signature)
+        p_s_dict = {'idA': p_s_idA, 'message': p_s_message, 'signature': p_signature}
+        pp_s_dict = pickle.dumps(p_s_dict)
+        s.send(p_s_master_public)
+        s.send(pp_s_dict)
+
+        # assert (sm9.verify (master_public, idA, message, signature))
+        # 1/0 ← Verify(mpk, M, σ, ID).验证算法Verify以系统主公钥mpk、签名消息M及其签名σ和签名者的标识ID
+        # 为输入, 输出“1”或者“0”.“1”表示签名有效,“0”表示签名无效.此算法由验证者执行.
         print(s.recv(1024).decode("utf-8"))
         s.send('结束本次通信'.encode())
         s.close()

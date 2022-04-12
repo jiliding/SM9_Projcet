@@ -80,7 +80,21 @@ def deal_data(conn, addr):
             break
 
 
-        conn.send('已发送'.encode("utf-8"))
+        p_s_master_public = conn.recv(2048)
+        pp_s_dict = conn.recv(1024)
+
+        s_master_public = pickle.loads(p_s_master_public)
+        p_s_dict = pickle.loads(pp_s_dict)
+        s_message = pickle.loads(p_s_dict['message'])
+        s_idA = pickle.loads(p_s_dict['idA'])
+        signature = pickle.loads(p_s_dict['signature'])
+        if (sm9.verify(s_master_public, s_idA, s_message, signature)) == False:
+            conn.send('验签失败'.encode())
+            conn.close
+            break
+
+
+        conn.send('验签成功'.encode("utf-8"))
         print('已发送')
         # print('已发送'.encode("utf-8"))
         print('通信时间：', time.ctime())
